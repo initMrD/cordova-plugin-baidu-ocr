@@ -53,16 +53,16 @@ A full example could be:
     //默认使用的是本地质量控制，如果想使用拍照扫描的方式，可以修改参数为
     //nativeEnable:false,nativeEnableManual:false
     cordova.plugins.BaiduOcr.scanId(
+        {
+            contentType:"IDCardBack",
+            nativeEnable:true,
+            nativeEnableManual:true
+        },
         (result)=>{
             console.log(JSON.stringify(result));
         },
         (error)=>{
             console.log(error)
-        },
-        {
-            contentType:"IDCardBack",
-            nativeEnable:true,
-            nativeEnableManual:true
         });
 ```
 销毁本地控制模型（destroy）：

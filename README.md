@@ -7,14 +7,9 @@ Follows the [Cordova Plugin spec](https://cordova.apache.org/docs/en/latest/plug
 
 ## Installation
 
-
-This requires cordova 7.1.0+ ( current stable v8.0.0 )
-
-    cordova plugin add cordova-plugin-baidu-ocr
-
 It is also possible to install via repo url directly ( unstable )
 
-    cordova plugin add https://github.com/liugogal/cordova-plugin-baidu-ocr.git
+    cordova plugin add https://github.com/initMrD/cordova-plugin-baidu-ocr.git
 
 注意：
 

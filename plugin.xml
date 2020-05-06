@@ -23,15 +23,15 @@
     </js-module>
 
     <platform name="android">
-        <source-file src="src/android/com/huatuo/cordova/BaiduOcr.java"
-                     target-dir="src/com/huatuo/cordova"/>
-        <source-file src="src/android/com/huatuo/cordova/FileUtil.java"
-                     target-dir="src/com/huatuo/cordova"/>
-        <source-file src="src/android/com/huatuo/cordova/JsonUtils.java"
-                     target-dir="src/com/huatuo/cordova"/>
+        <source-file src="src/android/com/initmrd/cordova/BaiduOcr.java"
+                     target-dir="src/com/initmrd/cordova"/>
+        <source-file src="src/android/com/initmrd/cordova/FileUtil.java"
+                     target-dir="src/com/initmrd/cordova"/>
+        <source-file src="src/android/com/initmrd/cordova/JsonUtils.java"
+                     target-dir="src/com/initmrd/cordova"/>
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="BaiduOcr">
-                <param name="android-package" value="com.huatuo.cordova.BaiduOcr"/>
+                <param name="android-package" value="com.initmrd.cordova.BaiduOcr"/>
             </feature>
         </config-file>
         <config-file target="AndroidManifest.xml" parent="/manifest" mode="merge">

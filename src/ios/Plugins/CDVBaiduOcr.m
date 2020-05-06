@@ -53,7 +53,7 @@ BOOL hasGotToken = NO;
 
 }
 
-- (void)scanId:(CDVInvokedUrlCommand *)command {
+- (void)scan:(CDVInvokedUrlCommand *)command {
 
     NSDictionary *param = [command argumentAtIndex:0];
 

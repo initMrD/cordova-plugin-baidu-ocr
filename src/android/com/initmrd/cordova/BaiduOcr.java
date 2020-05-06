@@ -1,4 +1,4 @@
-package com.huatuo.cordova;
+package com.initmrd.cordova;
 
 import android.Manifest;
 import android.app.Activity;
@@ -15,8 +15,11 @@ import com.baidu.ocr.sdk.OCR;
 import com.baidu.ocr.sdk.OnResultListener;
 import com.baidu.ocr.sdk.exception.OCRError;
 import com.baidu.ocr.sdk.model.AccessToken;
+import com.baidu.ocr.sdk.model.GeneralBasicParams;
+import com.baidu.ocr.sdk.model.GeneralResult;
 import com.baidu.ocr.sdk.model.IDCardParams;
 import com.baidu.ocr.sdk.model.IDCardResult;
+import com.baidu.ocr.sdk.model.WordSimple;
 import com.baidu.ocr.ui.camera.CameraActivity;
 import com.baidu.ocr.ui.camera.CameraNativeHelper;
 import com.baidu.ocr.ui.camera.CameraView;
@@ -31,6 +34,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class BaiduOcr extends CordovaPlugin {
 
@@ -129,7 +135,7 @@ public class BaiduOcr extends CordovaPlugin {
      * @param callbackContext
      * @throws JSONException
      */
-    void scanId(JSONArray data, CallbackContext callbackContext) throws JSONException {
+    void scan(JSONArray data, CallbackContext callbackContext) throws JSONException {
 
         JSONObject errObj = new JSONObject();
         JSONObject params = null;
@@ -167,7 +173,7 @@ public class BaiduOcr extends CordovaPlugin {
             contentType = params.getString(CameraActivity.KEY_CONTENT_TYPE);
         }
         //参数判断是否合法
-        if (!contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_FRONT) && !contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_BACK)) {
+        if (!contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_FRONT) && !contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_BACK) && !contentType.equals(CameraActivity.CONTENT_TYPE_GENERAL)) {
             errObj.put("code", -1);
             errObj.put("message", "contentType value error");
             callbackContext.error(errObj);
@@ -240,6 +246,8 @@ public class BaiduOcr extends CordovaPlugin {
                         recIDCard(IDCardParams.ID_CARD_SIDE_FRONT, filePath);
                     } else if (CameraActivity.CONTENT_TYPE_ID_CARD_BACK.equals(contentType)) {
                         recIDCard(IDCardParams.ID_CARD_SIDE_BACK, filePath);
+                    } else if (CameraActivity.CONTENT_TYPE_GENERAL.equals(contentType)) {
+                        recGeneral(filePath);
                     }
                 }
             }
@@ -335,6 +343,31 @@ public class BaiduOcr extends CordovaPlugin {
                     Log.i(TAG, error.toString());
                     mCallback.error(JsonUtils.toJson(error));
                 }
+            }
+        });
+    }
+
+    private void recGeneral(String filePath) {
+        // 通用文字识别参数设置
+        GeneralBasicParams param = new GeneralBasicParams();
+        param.setDetectDirection(true);
+        param.setImageFile(new File(filePath));
+
+        // 调用通用文字识别服务
+        OCR.getInstance().recognizeGeneralBasic(param, new OnResultListener<GeneralResult>() {
+
+            @Override
+            public void onResult(GeneralResult result) {
+                // 调用成功，返回GeneralResult对象
+                if (result != null && mCallback != null) {
+                    Log.i(TAG, result.toString());
+                    mCallback.success(result.getJsonRes());
+                }
+            }
+
+            @Override
+            public void onError(OCRError error) {
+                // 调用失败，返回OCRError对象
             }
         });
     }

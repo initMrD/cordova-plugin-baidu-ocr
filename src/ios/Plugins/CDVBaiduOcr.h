@@ -11,7 +11,7 @@
 @interface CDVBaiduOcr : CDVPlugin
 
 - (void)init:(CDVInvokedUrlCommand *)command;
-- (void)scanId:(CDVInvokedUrlCommand *)command;
+- (void)scan:(CDVInvokedUrlCommand *)command;
 - (void)destroy:(CDVInvokedUrlCommand *)command;
 
 @end

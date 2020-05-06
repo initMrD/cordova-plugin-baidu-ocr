@@ -1,4 +1,4 @@
-package com.huatuo.cordova;
+package com.initmrd.cordova;
 
 import android.util.Log;
 

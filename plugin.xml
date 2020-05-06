@@ -7,11 +7,11 @@
     <name>BaiduOcr</name>
     <description>百度AI插件</description>
     <license>MIT</license>
-    <author>liu-gogal</author>
+    <author>initMrD</author>
     <keywords>Baidu, Ocr, AI</keywords>
 
-    <repo>https://github.com/liugogal/cordova-plugin-baidu-ocr</repo>
-    <issue>https://github.com/liugogal/cordova-plugin-baidu-ocr/issues</issue>
+    <repo>https://github.com/initMrD/cordova-plugin-baidu-ocr</repo>
+    <issue>https://github.com/initMrD/cordova-plugin-baidu-ocr/issues</issue>
 
 
     <engines>

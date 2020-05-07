@@ -55,9 +55,8 @@ BOOL hasGotToken = NO;
 
 - (void)scan:(CDVInvokedUrlCommand *)command {
 
-    NSDictionary *param = [command argumentAtIndex:0];
-
     NSMutableDictionary* resultDic = [NSMutableDictionary dictionary];
+    NSDictionary *param = [command argumentAtIndex:0];
 
     NSMutableString *contentType = nil;
     BOOL nativeEnable = YES;
@@ -96,86 +95,108 @@ BOOL hasGotToken = NO;
         }else{
             cardType = CardTypeIdCardFont;
         }
+        [self takePhotoCard:cardType command:command resultDic:resultDic];
+        
     } else if ([contentType isEqualToString:@"IDCardBack"]) {
         if(nativeEnable){
             cardType = CardTypeLocalIdCardBack;
         }else{
             cardType = CardTypeIdCardBack;
         }
+        [self takePhotoCard:cardType command:command resultDic:resultDic];
+    } else{
+        [self takePhotoGeneral:contentType command:command resultDic:resultDic];
     }
+    
+}
 
 
-    UIViewController * vc =
-    [AipCaptureCardVC ViewControllerWithCardType:cardType andImageHandler:^(UIImage *image){
-        [[AipOcrService shardService] detectIdCardFrontFromImage:image withOptions:nil successHandler:^(id result){
-            NSLog(@"%@", result);
-
-            //NSMutableString *message = [NSMutableString string];
-
-
-            if(result[@"words_result"]){
-                if([result[@"words_result"] isKindOfClass:[NSDictionary class]]){
-
-                    NSMutableDictionary *data = [NSMutableDictionary dictionary];
-                    NSDictionary *wordsResult = [NSDictionary dictionaryWithDictionary:result[@"words_result"]];
-
-                    if(wordsResult[@"姓名"] && wordsResult[@"姓名"][@"words"])
-                        data[@"name"] = wordsResult[@"姓名"][@"words"];
-                    if(wordsResult[@"出生"] && wordsResult[@"出生"][@"words"])
-                        data[@"birthday"] = wordsResult[@"出生"][@"words"];
-                    if(wordsResult[@"公民身份号码"] && wordsResult[@"公民身份号码"][@"words"])
-                        data[@"idNumber"] = wordsResult[@"公民身份号码"][@"words"];
-                    if(wordsResult[@"性别"] && wordsResult[@"性别"][@"words"])
-                        data[@"gender"] = wordsResult[@"性别"][@"words"];
-                    if(wordsResult[@"住址"] && wordsResult[@"住址"][@"words"])
-                        data[@"address"] = wordsResult[@"住址"][@"words"];
-                    if(wordsResult[@"民族"] && wordsResult[@"民族"][@"words"])
-                        data[@"ethnic"] = wordsResult[@"民族"][@"words"];
-
-                    if(wordsResult[@"失效日期"] && wordsResult[@"失效日期"][@"words"])
-                        data[@"expiryDate"] = wordsResult[@"失效日期"][@"words"];
-                    if(wordsResult[@"签发日期"] && wordsResult[@"签发日期"][@"words"])
-                        data[@"signDate"] = wordsResult[@"签发日期"][@"words"];
-                    if(wordsResult[@"签发机关"] && wordsResult[@"签发机关"][@"words"])
-                        data[@"issueAuthority"] = wordsResult[@"签发机关"][@"words"];
-
-                    resultDic[@"code"] = @(0);
-                    resultDic[@"message"] = @"OK";
-                    resultDic[@"data"] = data;
-
-                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:resultDic];
-
-                    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
-                }else if([result[@"words_result"] isKindOfClass:[NSArray class]]){
-                    //其他类型的文本扫描，后期增加
-                    NSLog(@"words_result: %@", result);
-                }
-
-            }else{
-                NSLog(@"words_result: %@", result);
-            }
-
-            //_successHandler(result);
-            // 这里可以存入相册
-            //UIImageWriteToSavedPhotosAlbum(image, nil, nil, (__bridge void *)self);
-
-            //NSLog(@"%@", [NSThread currentThread]);
-
-            //回到主线程
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.viewController dismissViewControllerAnimated:YES completion:nil];
-            });
-        } failHandler:^(NSError *error){
-            NSLog(@"读取身份证失败：%@",error);
-            resultDic[@"code"] = @(-1);
-            resultDic[@"message"] = @"读取身份证失败";
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:resultDic];
-
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }];
+-(void)takePhotoGeneral:(NSMutableString *)contentType
+                command:(CDVInvokedUrlCommand *)command
+              resultDic:(NSMutableDictionary *) resultDic{
+    UIViewController * vc = [AipGeneralVC ViewControllerWithHandler:^(UIImage *image){
+        [self scanGeneral:contentType image:image command:command resultDic:resultDic];
     }];
     [self.viewController presentViewController:vc animated:YES completion:nil];
+}
+
+- (void)takePhotoCard:(CardType)cardType
+    command:(CDVInvokedUrlCommand *)command
+    resultDic:(NSMutableDictionary *) resultDic{
+    UIViewController * vc =
+    [AipCaptureCardVC ViewControllerWithCardType:cardType andImageHandler:^(UIImage *image){
+        [self scanId:image command:command];
+    }];
+    [self.viewController presentViewController:vc animated:YES completion:nil];
+}
+
+- (void)scanGeneral:(NSMutableString *)contentType
+              image:(UIImage *)image
+            command:(CDVInvokedUrlCommand *)command
+            resultDic:(NSMutableDictionary*) resultDic{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.viewController dismissViewControllerAnimated:YES completion:nil];
+    });
+    if([contentType isEqualToString:@"general"]){
+        [[AipOcrService shardService] detectTextBasicFromImage:image withOptions:nil successHandler: ^(id result){
+            [self doData:result command:command];
+        } failHandler:^(NSError *error){
+            [self doError:error command:command];
+        }];
+    } else if([contentType isEqualToString:@"driving"]){
+        [[AipOcrService shardService] detectVehicleLicenseFromImage:image withOptions:nil successHandler: ^(id result){
+            [self doData:result command:command];
+        } failHandler:^(NSError *error){
+            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"highGeneral"];;
+            [self scanGeneral:ct image:image command:command resultDic:resultDic];
+        }];
+    } else if([contentType isEqualToString:@"highGeneral"]){
+        [[AipOcrService shardService] detectTextAccurateBasicFromImage:image withOptions:nil successHandler: ^(id result){
+            [self doData:result command:command];
+        } failHandler:^(NSError *error){
+            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"general"];;
+            [self scanGeneral:ct image:image command:command resultDic:resultDic];
+        }];
+    }
+    
+}
+- (void)doData:(id) result
+       command:(CDVInvokedUrlCommand *)command{
+    NSLog(@"%@", result);
+    NSMutableDictionary *data = [NSMutableDictionary dictionary];
+    data[@"words_result"] = result[@"words_result"];
+    data[@"words_result_num"] = result[@"words_result_num"];
+    data[@"log_id"] = result[@"log_id"];
+    NSError * error = nil;
+    NSData * jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:&error];
+    NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:jsonStr];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+-(void)doError:(NSError *)error
+       command:(CDVInvokedUrlCommand *)command{
+    NSLog(@"读取失败：%@",error);
+    NSMutableDictionary* resultDic = [NSMutableDictionary dictionary];
+    resultDic[@"code"] = @(-1);
+    resultDic[@"message"] = @"读取失败";
+    NSData * jsonData = [NSJSONSerialization dataWithJSONObject:resultDic options:NSJSONWritingPrettyPrinted error:&error];
+    NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:jsonStr];
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+}
+
+- (void)scanId:(UIImage *)image
+       command:(CDVInvokedUrlCommand *)command{
+    
+    [[AipOcrService shardService] detectIdCardFrontFromImage:image withOptions:nil successHandler:^(id result){
+        NSLog(@"%@", result);
+        [self doData:result command:command];
+
+    } failHandler:^(NSError *error){
+        [self doError:error command:command];
+    }];
 }
 
 - (void)destroy:(CDVInvokedUrlCommand *)command {

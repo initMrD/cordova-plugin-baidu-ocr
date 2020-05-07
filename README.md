@@ -17,6 +17,8 @@ It is also possible to install via repo url directly ( unstable )
 
 2、然后将aip.license拷贝到www/assets下面。
 
+3、IOS将授权文件添加至XCode工程（配置为资源并拷贝，Target -> Build Phases -> Copy Bundle Resource 中添加该文件）
+
 注意：官方说的是拷贝到android的app/src/main/assets下面，不用担心，此插件使用了hook钩子做文件拷贝，可以放心使用。
 
 

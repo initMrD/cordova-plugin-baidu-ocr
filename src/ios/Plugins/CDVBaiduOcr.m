@@ -137,7 +137,7 @@ BOOL hasGotToken = NO;
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.viewController dismissViewControllerAnimated:YES completion:nil];
     });
-    if([contentType isEqualToString:@"general"]){
+    if([contentType isEqualToString:@"lowGeneral"]){
         [[AipOcrService shardService] detectTextBasicFromImage:image withOptions:nil successHandler: ^(id result){
             [self doData:result command:command];
         } failHandler:^(NSError *error){
@@ -147,14 +147,14 @@ BOOL hasGotToken = NO;
         [[AipOcrService shardService] detectVehicleLicenseFromImage:image withOptions:nil successHandler: ^(id result){
             [self doData:result command:command];
         } failHandler:^(NSError *error){
-            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"highGeneral"];;
+            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"general"];;
             [self scanGeneral:ct image:image command:command resultDic:resultDic];
         }];
-    } else if([contentType isEqualToString:@"highGeneral"]){
+    } else if([contentType isEqualToString:@"general"]){
         [[AipOcrService shardService] detectTextAccurateBasicFromImage:image withOptions:nil successHandler: ^(id result){
             [self doData:result command:command];
         } failHandler:^(NSError *error){
-            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"general"];;
+            NSMutableString *ct = [NSMutableString stringWithFormat:@"%@",@"lowGeneral"];;
             [self scanGeneral:ct image:image command:command resultDic:resultDic];
         }];
     }

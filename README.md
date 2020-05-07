@@ -9,7 +9,7 @@ Follows the [Cordova Plugin spec](https://cordova.apache.org/docs/en/latest/plug
 
 It is also possible to install via repo url directly ( unstable )
 
-    cordova plugin add https://github.com/initMrD/cordova-plugin-baidu-ocr.git
+    cordova plugin add https://github.com/initMrD/cordova-plugin-baidu-ocr
 
 注意：
 

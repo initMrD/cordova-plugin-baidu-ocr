@@ -87,3 +87,64 @@ A full example could be:
             console.log(error)
         });
 ```
+### ionic-native
+
+install：
+
+    npm i @initmrd/baidu-ocr --save
+
+app.module.ts:
+```
+    import {BaiduOcr} from "@initmrd/baidu-ocr";
+    @NgModule({
+        providers: [
+            BaiduOcr
+        ]
+    })
+    export class AppModule {}
+```
+view.page.ts:
+```
+    import {BaiduOcr} from "@initmrd/baidu-ocr";
+    @IonicPage()
+    @Component({
+        selector: 'view-page',
+        templateUrl: 'view-page.html'
+    })
+    export class ViewPage {
+        constructor(private baiduOcr: BaiduOcr) {}
+        
+        doInit() {
+            this.baiduOcr.init()
+                .then((result)=>{
+                    
+                })
+                .catch((error)=>{
+                    
+                });
+        }
+        
+        doDestroy() {
+            this.baiduOcr.destroy()
+                .then((result)=>{
+                    
+                })
+                .catch((error)=>{
+                    
+                });
+        }
+        
+        doScanId() {
+            this.baiduOcr.scanId({contentType: 'IDCardFront', nativeEnable: true, nativeEnableManual: true})
+                .then((result)=>{
+                    if (result.message == "OK") {
+                        console.log(result.data);
+                    }
+                })
+                .catch((error)=>{
+                    
+                });
+        }
+        
+    }
+```

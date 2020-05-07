@@ -62,13 +62,30 @@ A full example could be:
             console.log(error)
         });
 ```
-扫描身份证（scan id card）:
+通用文字:
 ```js
     //默认使用的是本地质量控制，如果想使用拍照扫描的方式，可以修改参数为
     //nativeEnable:false,nativeEnableManual:false
     cordova.plugins.BaiduOcr.scan(
         {
             contentType:"general",
+            nativeEnable:true,
+            nativeEnableManual:true
+        },
+        (result)=>{
+            console.log(JSON.stringify(result));
+        },
+        (error)=>{
+            console.log(error)
+        });
+```
+行驶证:
+```js
+    //默认使用的是本地质量控制，如果想使用拍照扫描的方式，可以修改参数为
+    //nativeEnable:false,nativeEnableManual:false
+    cordova.plugins.BaiduOcr.scan(
+        {
+            contentType:"driving",
             nativeEnable:true,
             nativeEnableManual:true
         },

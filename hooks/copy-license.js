@@ -16,7 +16,7 @@ module.exports = function (ctx) {
     //android项目的assets目录
     var assetsRoot = platformRoot + '/app/src/main/assets';
     //证书源路径
-    var license_from = assetsRoot + '/www/assets/aip.license';
+    var license_from = assetsRoot + '/www/assets/android/aip.license';
     //证书目标路径
     var license_to = assetsRoot + '/aip.license';
 
@@ -30,8 +30,8 @@ module.exports = function (ctx) {
         console.log('拷贝证书成功');
         deferral.resolve();
     } else {
-        console.log('未找到证书文件,请将aip.license证书拷贝到www/assets下');
-        deferral.reject('未找到证书文件,请将aip.license证书拷贝到www/assets下');
+        console.log('未找到证书文件,请将aip.license证书拷贝到assets/android');
+        deferral.reject('未找到证书文件,请将aip.license证书拷贝到assets/android下');
     }
 
     return deferral.promise;

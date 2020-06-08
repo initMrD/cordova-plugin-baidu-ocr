@@ -74,14 +74,17 @@ public class BaiduOcr extends CordovaPlugin {
      * @param callbackContext The callback id used when calling back into JavaScript.
      * @return True if the action was valid, false if not.
      */
-    public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+    public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
 
-        cordova.getThreadPool().execute(() -> {
-            try {
-                Method method = BaiduOcr.class.getDeclaredMethod(action, JSONArray.class, CallbackContext.class);
-                method.invoke(BaiduOcr.this, args, callbackContext);
-            } catch (Exception e) {
-                Log.e(TAG, e.toString());
+        cordova.getThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Method method = BaiduOcr.class.getDeclaredMethod(action, JSONArray.class, CallbackContext.class);
+                    method.invoke(BaiduOcr.this, args, callbackContext);
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                }
             }
         });
         return true;
@@ -94,35 +97,38 @@ public class BaiduOcr extends CordovaPlugin {
      * @param callbackContext
      * @throws JSONException
      */
-    void init(JSONArray data, CallbackContext callbackContext) throws JSONException {
+    void init(JSONArray data, final CallbackContext callbackContext) throws JSONException {
         //  初始化本地质量控制模型,释放代码在onDestory中
         //  调用身份证扫描必须加上 intent.putExtra(CameraActivity.KEY_NATIVE_MANUAL, true); 关闭自动初始化和释放本地模型
         CameraNativeHelper.init(cordova.getContext(), OCR.getInstance().getLicense(),
-                (errorCode, e) -> {
-                    String msg;
-                    switch (errorCode) {
-                        case CameraView.NATIVE_SOLOAD_FAIL:
-                            msg = "加载so失败，请确保apk中存在ui部分的so";
-                            break;
-                        case CameraView.NATIVE_AUTH_FAIL:
-                            msg = "授权本地质量控制token获取失败";
-                            break;
-                        case CameraView.NATIVE_INIT_FAIL:
-                            msg = "本地质量控制";
-                            break;
-                        default:
-                            msg = String.valueOf(errorCode);
-                    }
+                new CameraNativeHelper.CameraNativeInitCallback() {
+                    @Override
+                    public void onError(int errorCode, Throwable e) {
+                        String msg;
+                        switch (errorCode) {
+                            case CameraView.NATIVE_SOLOAD_FAIL:
+                                msg = "加载so失败，请确保apk中存在ui部分的so";
+                                break;
+                            case CameraView.NATIVE_AUTH_FAIL:
+                                msg = "授权本地质量控制token获取失败";
+                                break;
+                            case CameraView.NATIVE_INIT_FAIL:
+                                msg = "本地质量控制";
+                                break;
+                            default:
+                                msg = String.valueOf(errorCode);
+                        }
 
-                    try {
-                        JSONObject r = new JSONObject();
-                        r.put("code", errorCode);
-                        r.put("message", msg);
-                        callbackContext.error(r);
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
-                    }
+                        try {
+                            JSONObject r = new JSONObject();
+                            r.put("code", errorCode);
+                            r.put("message", msg);
+                            callbackContext.error(r);
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
+                        }
 
+                    }
                 });
         Log.e(TAG, "CameraNativeHelper.init ok");
     }
@@ -284,8 +290,11 @@ public class BaiduOcr extends CordovaPlugin {
      * @param message 文本消息
      */
     private void toastMessage(String message) {
-        cordova.getActivity().runOnUiThread(() -> {
-            //Toast.makeText(cordova.getContext(), message, Toast.LENGTH_LONG).show();
+        cordova.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //Toast.makeText(cordova.getContext(), message, Toast.LENGTH_LONG).show();
+            }
         });
     }
 
@@ -373,7 +382,7 @@ public class BaiduOcr extends CordovaPlugin {
         });
     }
 
-    private void recHighGeneral(String filePath) {
+    private void recHighGeneral(final String filePath) {
         // 通用文字识别参数设置
         GeneralBasicParams param = new GeneralBasicParams();
         param.setDetectDirection(true);

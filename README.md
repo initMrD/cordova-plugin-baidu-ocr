@@ -15,7 +15,7 @@ It is also possible to install via repo url directly ( unstable )
 
 1、首先需要到Baidu上注册并且申请并下载aip.license授权文件，具体操作查看：https://ai.baidu.com/docs#/OCR-Android-SDK/top
 
-2、然后将aip.license拷贝到www/assets下面。
+2、然后将android的aip.license拷贝到www/assets/android下面。
 
 3、IOS将授权文件添加至XCode工程（配置为资源并拷贝，Target -> Build Phases -> Copy Bundle Resource 中添加该文件）
 

@@ -178,8 +178,7 @@ public class BaiduOcr extends CordovaPlugin {
             contentType = params.getString(CameraActivity.KEY_CONTENT_TYPE);
         }
         //参数判断是否合法
-        if (!contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_FRONT) && !contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_BACK) && !contentType.equals(CameraActivity.CONTENT_TYPE_GENERAL) && !contentType.equals(CONTENT_TYPE_DRIVING))
-        {
+        if (!contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_FRONT) && !contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_BACK) && !contentType.equals(CameraActivity.CONTENT_TYPE_GENERAL) && !contentType.equals(CONTENT_TYPE_DRIVING)) {
             errObj.put("code", -1);
             errObj.put("message", "contentType value error");
             callbackContext.error(errObj);
@@ -235,15 +234,11 @@ public class BaiduOcr extends CordovaPlugin {
             Uri uri = data.getData();
             String filePath = getRealPathFromURI(uri);
             recIDCard(IDCardParams.ID_CARD_SIDE_FRONT, filePath);
-        }
-
-        if (requestCode == REQUEST_CODE_PICK_IMAGE_BACK && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_PICK_IMAGE_BACK && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
             String filePath = getRealPathFromURI(uri);
             recIDCard(IDCardParams.ID_CARD_SIDE_BACK, filePath);
-        }
-
-        if (requestCode == REQUEST_CODE_CAMERA && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_CAMERA && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 String contentType = data.getStringExtra(CameraActivity.KEY_CONTENT_TYPE);
                 String filePath = FileUtil.getSaveFile(cordova.getActivity().getApplicationContext()).getAbsolutePath();
@@ -259,6 +254,8 @@ public class BaiduOcr extends CordovaPlugin {
                     }
                 }
             }
+        } else {
+            mCallback.error("cancel");
         }
 
     }

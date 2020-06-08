@@ -156,7 +156,7 @@ view.page.ts:
         
         this.baiduOcr.scan(
             {
-                contentType: 'IDCardBack',//IDCardBack/driving/general/
+                contentType: 'IDCardBack', // IDCardBack|driving|general
                 nativeEnable: false,
                 nativeEnableManual: false
             },

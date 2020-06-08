@@ -134,13 +134,14 @@ view.page.ts:
         constructor(private baiduOcr: BaiduOcr) {}
         
         doInit() {
-            this.baiduOcr.init()
-                .then((result)=>{
-                    
-                })
-                .catch((error)=>{
-                    
-                });
+            this.baiduOcr.init(
+                () => {
+                    console.log('init ok');
+                },
+            (error: any) => {
+                console.log('init error');
+                console.log(error);
+            });
         }
         
         doDestroy() {
@@ -153,17 +154,20 @@ view.page.ts:
                 });
         }
         
-        doScanId() {
-            this.baiduOcr.scanId({contentType: 'IDCardFront', nativeEnable: true, nativeEnableManual: true})
-                .then((result)=>{
-                    if (result.message == "OK") {
-                        console.log(result.data);
-                    }
-                })
-                .catch((error)=>{
-                    
-                });
-        }
+        this.baiduOcr.scan(
+            {
+                contentType: 'IDCardBack',//IDCardBack/driving/general/
+                nativeEnable: false,
+                nativeEnableManual: false
+            },
+            (result: any) => {
+                console.log(result);
+                console.log(JSON.parse(result));
+            },
+            (error: any) => {
+                console.log(error);
+            }
+        );
         
     }
 ```

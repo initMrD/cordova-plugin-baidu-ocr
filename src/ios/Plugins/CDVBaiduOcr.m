@@ -26,11 +26,8 @@ BOOL hasGotToken = NO;
     NSString *licenseFile = [[NSBundle mainBundle] pathForResource:@"aip" ofType:@"license"];
     NSData *licenseFileData = [NSData dataWithContentsOfFile:licenseFile];
     if(!licenseFileData) {
-        //[[[UIAlertView alloc] initWithTitle:@"授权失败" message:@"授权文件不存在" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil] show];
-
-        resultDic[@"code"] = @(-1);
-        resultDic[@"message"] = @"授权文件不存在";
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:resultDic];
+        NSString * message = @"授权文件不存在";
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
@@ -43,9 +40,8 @@ BOOL hasGotToken = NO;
         hasGotToken = YES;
     } failHandler:^(NSError *error) {
         NSLog(@"获取token失败: %@",error);
-        resultDic[@"code"] = @(-1);
-        resultDic[@"message"] = @"获取token失败";
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:resultDic];
+        NSString *message = @"获取token失败";
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         hasGotToken = NO;
@@ -66,9 +62,8 @@ BOOL hasGotToken = NO;
 
     //必须初始化
     if(!hasGotToken) {
-        resultDic[@"code"] = @(-1);
-        resultDic[@"message"] = @"please init ocr";
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:resultDic];
+        NSString *message = @"请等待ocr模块初始化完成后再试";
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
@@ -76,9 +71,8 @@ BOOL hasGotToken = NO;
 
     //如果未找到contentType属性则直接返回错误
     if(param == nil || param[@"contentType"] == nil) {
-        resultDic[@"code"] = @(-1);
-        resultDic[@"message"] = @"contentType is null";
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsDictionary:resultDic];
+        NSString *message = @"contentType is null";
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
@@ -96,7 +90,7 @@ BOOL hasGotToken = NO;
             cardType = CardTypeIdCardFont;
         }
         [self takePhotoCard:cardType command:command resultDic:resultDic];
-        
+
     } else if ([contentType isEqualToString:@"IDCardBack"]) {
         if(nativeEnable){
             cardType = CardTypeLocalIdCardBack;
@@ -107,7 +101,7 @@ BOOL hasGotToken = NO;
     } else{
         [self takePhotoGeneral:contentType command:command resultDic:resultDic];
     }
-    
+
 }
 
 
@@ -158,7 +152,7 @@ BOOL hasGotToken = NO;
             [self scanGeneral:ct image:image command:command resultDic:resultDic];
         }];
     }
-    
+
 }
 - (void)doData:(id) result
        command:(CDVInvokedUrlCommand *)command{
@@ -177,19 +171,15 @@ BOOL hasGotToken = NO;
 -(void)doError:(NSError *)error
        command:(CDVInvokedUrlCommand *)command{
     NSLog(@"读取失败：%@",error);
-    NSMutableDictionary* resultDic = [NSMutableDictionary dictionary];
-    resultDic[@"code"] = @(-1);
-    resultDic[@"message"] = @"读取失败";
-    NSData * jsonData = [NSJSONSerialization dataWithJSONObject:resultDic options:NSJSONWritingPrettyPrinted error:&error];
-    NSString * jsonStr = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:jsonStr];
+    NSString *message = @"读取失败";
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:message];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
 - (void)scanId:(UIImage *)image
        command:(CDVInvokedUrlCommand *)command{
-    
+
     [[AipOcrService shardService] detectIdCardFrontFromImage:image withOptions:nil successHandler:^(id result){
         NSLog(@"%@", result);
         [self doData:result command:command];

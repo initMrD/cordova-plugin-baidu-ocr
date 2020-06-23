@@ -119,14 +119,7 @@ public class BaiduOcr extends CordovaPlugin {
                                 msg = String.valueOf(errorCode);
                         }
 
-                        try {
-                            JSONObject r = new JSONObject();
-                            r.put("code", errorCode);
-                            r.put("message", msg);
-                            callbackContext.error(r);
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
+                        callbackContext.error(msg);
 
                     }
                 });
@@ -151,9 +144,7 @@ public class BaiduOcr extends CordovaPlugin {
 
         //如果百度认证未通过，则直接返回错误
         if (!hasGotToken) {
-            errObj.put("code", -1);
-            errObj.put("message", "please init ocr");
-            callbackContext.error(errObj);
+            callbackContext.error("请等待ocr模块初始化完成后再试");
             return;
         }
 
@@ -161,16 +152,12 @@ public class BaiduOcr extends CordovaPlugin {
         if (data != null && data.length() > 0) {
             params = data.getJSONObject(0);
         } else {
-            errObj.put("code", -1);
-            errObj.put("message", "params is error");
-            callbackContext.error(errObj);
+            callbackContext.error("params is error");
             return;
         }
         //如果参数为空，或者参数中未找到contentType属性，则返回错误
         if (params == null || !params.has(CameraActivity.KEY_CONTENT_TYPE)) {
-            errObj.put("code", -1);
-            errObj.put("message", "contentType is null");
-            callbackContext.error(errObj);
+            callbackContext.error("contentType is null");
             return;
         }
         //contentType取值： IDCardFront(正面),IDCardBack(反面)
@@ -179,9 +166,7 @@ public class BaiduOcr extends CordovaPlugin {
         }
         //参数判断是否合法
         if (!contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_FRONT) && !contentType.equals(CameraActivity.CONTENT_TYPE_ID_CARD_BACK) && !contentType.equals(CameraActivity.CONTENT_TYPE_GENERAL) && !contentType.equals(CONTENT_TYPE_DRIVING)) {
-            errObj.put("code", -1);
-            errObj.put("message", "contentType value error");
-            callbackContext.error(errObj);
+            callbackContext.error("contentType value error");
             return;
         }
 

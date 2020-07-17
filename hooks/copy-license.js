@@ -5,9 +5,9 @@ module.exports = function (ctx) {
         return;
     }
 
-    var fs = ctx.requireCordovaModule('fs'),
-        path = ctx.requireCordovaModule('path'),
-        deferral = ctx.requireCordovaModule('q').defer();
+    var fs = require('fs'),
+        path = require('path'),
+        deferral = require('q').defer();
 
     var platformRoot, assetsRoot, license_from, license_to;
     if (ctx.opts.platforms.indexOf('ios') < 0) {

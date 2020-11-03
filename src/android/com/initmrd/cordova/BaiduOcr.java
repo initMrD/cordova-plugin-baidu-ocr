@@ -107,13 +107,13 @@ public class BaiduOcr extends CordovaPlugin {
                         String msg;
                         switch (errorCode) {
                             case CameraView.NATIVE_SOLOAD_FAIL:
-                                msg = "加载so失败，请确保apk中存在ui部分的so";
+                                msg = "模块so错误";
                                 break;
                             case CameraView.NATIVE_AUTH_FAIL:
-                                msg = "授权本地质量控制token获取失败";
+                                msg = "模块Token错误";
                                 break;
                             case CameraView.NATIVE_INIT_FAIL:
-                                msg = "本地质量控制";
+                                msg = "模块初始化失败";
                                 break;
                             default:
                                 msg = String.valueOf(errorCode);
@@ -144,7 +144,7 @@ public class BaiduOcr extends CordovaPlugin {
 
         //如果百度认证未通过，则直接返回错误
         if (!hasGotToken) {
-            callbackContext.error("请等待ocr模块初始化完成后再试");
+            callbackContext.error("ocr模块初始化未成功，请重启APP或等待后再试");
             return;
         }
 
